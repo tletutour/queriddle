@@ -8,54 +8,47 @@ from sqlalchemy.orm import sessionmaker
 
 
 
+engine = create_engine('sqlite:///:memory:', echo=True)   
 
-Base = declarative_base()
+metadata = MetaData()
 
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    user_tag =Column(String)
-    password =Column(String)
-    email =Column(String)
-    status =Column(String)
+user=Table('user',metadata,
+    Column('id',Integer, autoincrement=True,primary_key=True),
+    Column('user_tag',String),
+    Column('password',String),
+    Column('email',String),
+    Column('status',String))
      
     
-class Commentaire(Base):
-    __tablename__ = 'commentaire'
-    id = Column(Integer, primary_key=True)
-    contenu =Column(String)
-    score =Column(Integer)
-    refere=Column(Integer) 
-    time=Column(DateTime)
-    idUser=Column(Integer, ForeignKey("user.id"))
-    idTopic=Column(Integer, ForeignKey("topic.id"))
-    
-    idUser = relationship("User")
-    idTopic = relationship("Topic")
-    
-class Topic(Base):
-    __tablename__="topic"
-    id=Column(Integer,primary_key=True)
-    nb_reponses=Column(Integer)
-    contenu=Column(Binary)
+commentaire=Table( 'commentaire',metadata,
+    Column('id',Integer,autoincrement=True, primary_key=True),
+    Column('contenu',String),
+    Column('score',Integer),
+    Column('refere',Integer) ,
+    Column('time',DateTime),
+    Column('idUser',Integer, ForeignKey("user.id")),
+    Column('idTopic',Integer, ForeignKey("topic.id"))
+) 
+topic=Table('topic',metadata,
+    Column('id',Integer,autoincrement=True,primary_key=True),
+    Column('nb_reponses',Integer),
+    Column('contenu',Binary)
+)
 
-class Matiere(Base):
-    __tablename__="matiere"
-    id = Column(Integer, primary_key=True)
-    total_size=Column(Float)
-    weekly_score=Column(Integer)
+matiere=Table('matiere',metadata,
+    Column('id' ,Integer,autoincrement=True, primary_key=True),
+    Column('total_size',Float),
+    Column('weekly_score',Integer)
+)
         
-class File(Base):
-    __tablename__="file"
-    id = Column(Integer, primary_key=True)
-    size=Column(Float)
-    data=Column(Binary)
-    file_type=Column(String)
-    idMatiere=Column(Integer, ForeignKey("matiere.id"))
-    
-    idMatiere = relationship("Matiere")
+file=Table('file',metadata,
+    Column('id',Integer,autoincrement=True, primary_key=True),
+    Column('size',Float),
+    Column('data',Binary),
+    Column('file_type',String),
+    Column('idMatiere',Integer, ForeignKey("matiere.id"))
+)
     
 
-engine = create_engine('sqlite:///sqlalchemy_example.db', echo=True)
-Base.metadata = MetaData(engine)
-session = sessionmaker(engine)()
+metadata.create_all(engine)                               
+connection = engine.connect()
