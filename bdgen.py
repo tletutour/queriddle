@@ -84,16 +84,27 @@ def ajouter_fichier(filepath,nom_fich,id_mat,conn):
             binary_file.close()
         return True
     except IOError:
-        return False #Ct the datetime type should enable timezone support, if available on the base date/time-holding type only. It is recommended to make use of the TIMESTAMP datatype directly when using this flag, as some databases include separate generic date/time-holding types distinct from the timezone-capable TIMESTAMP datatype, such as Oracle.ouldn't open File!
+        return False 
 
 '''
 Pour l'insertion d'un comm y'a plusieurs trucs à faire,
 parce que les comms changent le ranking des matières
+
 '''
-def ajouter_comm(contenu,idUser,idTopic):
+def ajouter_comm(contenu,idUser,idTopic,refere,conn):
+    comm_ins = commentaire.insert()
+    conn.execute(comm_ins.values(contenu=contenu,refere=refere,idUser=idUser,idTopic=idTopic,score=0))
     
-    
-    
+'''
+Column('id',Integer, autoincrement=True,primary_key=True),
+    Column('user_tag',String),
+    Column('password',String),
+    Column('email',String),
+    Column('status',String))
+    pour ajouter un user il faut voir si l'email et/ou le tag sont pas deja pris
+'''
+def ajouter_user(user_tag,password,email,status):
+    pass
     
 '''
 *******METHODES D'ACQUISITION*******
@@ -104,7 +115,7 @@ surement utile pour les menus déroulants
 '''
 def lister_fich_mat(mat, conn):
     rowlist= []
-    for row in connection.execute("select nom_fichier from file where id_matiere="+str(mat)):
+    for row in connection.execute("select nom_fichier,id from file where id_matiere="+str(mat)):
         rowlist.append(row)
         print(row)
     return rowlist
@@ -116,12 +127,24 @@ mis dans l'ordre chronologique
 '''
 def lister_reponses(id_com):
     rowlist= []
-    for row in connection.execute("select * from commentaire where refere="+str(id_com)+" order by"):
+    for row in connection.execute("select * from commentaire where refere="+str(id_com)+" order by time asc"):
         rowlist.append(row)
         print(row)
     return rowlist
-    
-
+  
+'''
+Pour voir si un utilisateur existe vraiment
+renvoie booleen
+peut être utile pour la connection
+'''
+def user_exists(tag_or_email,password):
+    rowlist= []
+    for row in connection.execute("select * from user where email="+str(tag_or_email)+"or user_tag="+str(tag_or_email)+"and password="+str(password)):
+        rowlist.append(row)
+    if(len(rowlist)==0):
+        return False
+    else:
+        return True
 
 metadata.create_all(engine)                               
 connection = engine.connect() 
@@ -130,5 +153,7 @@ if  __name__=='__main__':#All test code goes here
     ajouter_matiere("WEB",connection)
     ajouter_matiere("CRO",connection)
     ajouter_matiere("TSA",connection)
+    
     ajouter_fichier("/home/tom/Documents/certificate.pdf","sujet de web",1,connection)
     lister_fich_mat(1,connection)
+    
