@@ -67,11 +67,11 @@ def resources():
     return render_template('resources.html')
 
 #... selon l'année choisie...
-@app.route('resources/<int:num_annee>/')
+@app.route('/resources/<int:num_annee>/')
 def annee():
     return render_template('annee.html')
 
-@app.route('resources/<int:num_annee>/<str:matiere>')
+@app.route('/resources/<int:num_annee>/<str:matiere>')
 def matiere():
     return render_template('matiere.html')
 
