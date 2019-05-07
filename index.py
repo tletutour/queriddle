@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
-from tabledef import Matiere, User, create_engine
+from tabledef import Matiere, User, create_engine,Fichier,Utilisateur
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
@@ -93,7 +93,7 @@ def annee(num_annee):
         #SELECT nomMat, score FROM Matiere WHERE annee=num_annee ORDER BY score DESC
         query=s.query(Matiere.nomMat, Matiere.score).filter_by(annee=num_annee).order_by(desc(Matiere.score)).all()
         for row in query:
-            anneeList.add(row.nomMat)
+            matiereList.add(row.nomMat)
             scoreList.add(row.score)
     return render_template('annee.html',matiereList=matiereList, scoreList=scoreList)
 
@@ -102,11 +102,15 @@ def matiere(num_annee,matiere):
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
+        fichierList=[]
         Session = sessionmaker(bind=engine)
         s = Session()
-        #A finir
-        query=s.query(Fichier.nomFichier).filter_by().order_by(desc(Matiere.score)).all()
-    return render_template('matiere.html')
+        #SELECT nomFichier FROM Fichier,Matiere 
+        #WHERE Matiere.id= Fichier.idMatiere AND Matiere.nomMat=matiere
+        query=s.query(Fichier.nomFichier).join(Matiere).filter(Matiere.id=Fichier.idMatiere).filter(Matiere.nomMat=matiere).all()
+        for row in query:
+            matiereList.add(row.nomFichier)
+    return render_template('matiere.html',fichierList=fichierList)
 
 #Espace personnel
 @app.route('/myaccount/')
