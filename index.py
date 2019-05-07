@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
-from tabledef import Matiere, User
+from tabledef import Matiere, User, create_engine
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def index():
         return redirect(url_for('do_admin_login'))
         #return render_template('index2.html')
     else:
-        return render_template('ressources.html')
+        return render_template('resources.html')
 
 
 #Page de login
@@ -65,7 +65,9 @@ def account():
 @app.route('/resources/')
 def resources():
     #On liste toutes les années
-    if request.method == 'GET':
+    if not session.get('logged_in'):
+        return redirect(url_for('do_admin_login'))
+    else:
         anneeList=[]
         Session = sessionmaker(bind=engine)
         s = Session()
@@ -79,7 +81,9 @@ def resources():
 #... selon l'année choisie...
 @app.route('/resources/<int:num_annee>/')
 def annee(num_annee):
-    if request.method == 'GET':
+    if not session.get('logged_in'):
+        return redirect(url_for('do_admin_login'))
+    else:
         matiereList=[]
         scoreList=[]
         Session = sessionmaker(bind=engine)
@@ -95,7 +99,9 @@ def annee(num_annee):
 
 @app.route('/resources/<int:num_annee>/<string:matiere>')
 def matiere(num_annee,matiere):
-    if request.method=='GET':
+    if not session.get('logged_in'):
+        return redirect(url_for('do_admin_login'))
+    else:
         Session = sessionmaker(bind=engine)
         s = Session()
         #A finir
@@ -111,3 +117,4 @@ def myaccount():
 
 if __name__ == "__main__":
     app.run()
+
