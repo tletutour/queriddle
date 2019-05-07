@@ -1,10 +1,13 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
 import os
+from flask_mail import Mail
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
 engine = create_engine('sqlite:///base.db', echo=True)
+mail = Mail()
 
 app = Flask(__name__)
+mail.init_app(app)
 
 @app.route('/')
 def home():
@@ -36,11 +39,17 @@ def account():
 
         Session = sessionmaker(bind=engine)
         s = Session()
-
-        query = s.query(User.username).filter(User.username.in_([request.form['username']]))
+        #TODO verifier adresse INSA
+        query = s.query(User.email).filter(User.email.in_([request.form['email']]))
         if query.first():
             flash("Ce nom d'utilisateur existe déjà !")
             return redirect(url_for('account'))
+        else:
+            msg = Message("Hello",
+                      sender="queriddle@gmail.com",
+                      recipients=["tom.le-tutour@insa-lyon.fr"])
+            mail.send(msg)
+        
         user = User(username=str(request.form['username']), password=str(request.form['password']))
         s.add(user)
         s.commit()
@@ -54,4 +63,4 @@ def logout():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='0.0.0.0', port=4000)
+    app.run(debug=True,host='0.0.0.0', port=3000)

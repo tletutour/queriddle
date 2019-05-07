@@ -5,8 +5,9 @@ from flask import Flask, request, redirect, \
     url_for, flash, render_template, make_response, session
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
-from tabledef import *
+from tabledef import Matiere, User
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
@@ -19,7 +20,7 @@ def index():
         return redirect(url_for('do_admin_login'))
         #return render_template('index2.html')
     else:
-        return render_template('index.html')
+        return render_template('ressources.html')
 
 
 #Page de login
@@ -28,7 +29,6 @@ def do_admin_login():
     if request.method == 'POST':
         POST_USERNAME = str(request.form['username'])
         POST_PASSWORD = str(request.form['password'])
-
         #Session sqlalchemy
         Session = sessionmaker(bind=engine)
         s = Session()
@@ -64,15 +64,42 @@ def account():
 #Accès aux sujets, TDs ...
 @app.route('/resources/')
 def resources():
-    return render_template('resources.html')
+    #On liste toutes les années
+    if request.method == 'GET':
+        anneeList=[]
+        Session = sessionmaker(bind=engine)
+        s = Session()
+        #On affiche toutes les annees dispo
+        #SELECT annee FROM Matiere GROUP BY annee
+        query=s.query(Matiere.annee).group_by(Matiere.annee).all()
+        for row in query:
+            anneeList.add(row.annee)
+    return render_template('resources.html',anneeList=anneeList)
 
 #... selon l'année choisie...
 @app.route('/resources/<int:num_annee>/')
-def annee():
-    return render_template('annee.html')
+def annee(num_annee):
+    if request.method == 'GET':
+        matiereList=[]
+        scoreList=[]
+        Session = sessionmaker(bind=engine)
+        s = Session()
+        #On veut recup toutes les matières d'une année en particulier
+        #On met les matières trending en premier
+        #SELECT nomMat, score FROM Matiere WHERE annee=num_annee ORDER BY score DESC
+        query=s.query(Matiere.nomMat, Matiere.score).filter_by(annee=num_annee).order_by(desc(Matiere.score)).all()
+        for row in query:
+            anneeList.add(row.nomMat)
+            scoreList.add(row.score)
+    return render_template('annee.html',matiereList=matiereList, scoreList=scoreList)
 
 @app.route('/resources/<int:num_annee>/<string:matiere>')
-def matiere():
+def matiere(num_annee,matiere):
+    if request.method=='GET':
+        Session = sessionmaker(bind=engine)
+        s = Session()
+        #A finir
+        query=s.query(Fichier.nomFichier).filter_by().order_by(desc(Matiere.score)).all()
     return render_template('matiere.html')
 
 #Espace personnel

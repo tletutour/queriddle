@@ -4,6 +4,7 @@ import os
 import datetime
 from sqlalchemy import *
 from sqlalchemy.sql import *
+from sqlalchemy import exc
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer,Float, String,MetaData ,ForeignKey,DateTime,Binary
 
@@ -14,20 +15,18 @@ engine = create_engine('sqlite:///base.db', echo=False)
 metadata = MetaData()
 
 user=Table('user',metadata,
-    Column('id',Integer, autoincrement=True,primary_key=True),
+    Column('email',String,nullable=False,primary_key=True),
     Column('user_tag',String),
     Column('password',String),
-    Column('email',String),
     Column('status',String))
-     
-    
+      
 commentaire=Table( 'commentaire',metadata,
     Column('id',Integer,autoincrement=True, primary_key=True),
     Column('contenu',String),
     Column('score',Integer),
     Column('refere',Integer) ,
     Column('time',DateTime,default=datetime.datetime.utcnow),
-    Column('idUser',Integer, ForeignKey("user.id")),
+    Column('idUser',Integer, ForeignKey("user.email")),
     Column('idTopic',Integer, ForeignKey("topic.id"))
 ) 
 topic=Table('topic',metadata,
@@ -103,9 +102,16 @@ Column('id',Integer, autoincrement=True,primary_key=True),
     Column('status',String))
     pour ajouter un user il faut voir si l'email et/ou le tag sont pas deja pris
 '''
-def ajouter_user(user_tag,password,email,status):
-    pass
-    
+
+def ajouter_user(user_tag,password,email,status,conn):
+    try:
+        usr_ins = user.insert()
+        conn.execute(usr_ins.values(user_tag=user_tag,password=password,email=email,status=status))
+        return True
+    except exc.SQLAlchemyError:
+        print("couldnt add !")
+        return False
+  
 '''
 *******METHODES D'ACQUISITION*******
 '''
@@ -120,12 +126,12 @@ def lister_fich_mat(mat, conn):
         print(row)
     return rowlist
 '''
-lister_reponses liste toutes les reponses à un commentaire(refere dans commentaire)
+lister_reponses liste toutes les reponses à un commentaire(refere dans commentaire)    rowlist= []
 surement utile l'affichage des commz à côté d'un sujet ou dans un topic honorable
 mis dans l'ordre chronologique
 
 '''
-def lister_reponses(id_com):
+def lister_reponses(id_com,conn):
     rowlist= []
     for row in connection.execute("select * from commentaire where refere="+str(id_com)+" order by time asc"):
         rowlist.append(row)
@@ -137,7 +143,7 @@ Pour voir si un utilisateur existe vraiment
 renvoie booleen
 peut être utile pour la connection
 '''
-def user_exists(tag_or_email,password):
+def user_exists(tag_or_email,password,conn):
     rowlist= []
     for row in connection.execute("select * from user where email="+str(tag_or_email)+"or user_tag="+str(tag_or_email)+"and password="+str(password)):
         rowlist.append(row)
@@ -155,5 +161,9 @@ if  __name__=='__main__':#All test code goes here
     ajouter_matiere("TSA",connection)
     
     ajouter_fichier("/home/tom/Documents/certificate.pdf","sujet de web",1,connection)
-    lister_fich_mat(1,connection)
+    ajouter_user("test","p","tom@qqch","dieu",connection)
+    ajouter_user("max","p","max@lol","dieu",connection)
+    ajouter_user("raph","p","tom@qqch","dieu",connection)
+    
+
     
