@@ -4,7 +4,7 @@ import os
 from random import choice
 from string import ascii_lowercase
 from sqlalchemy.orm import sessionmaker
-from tabledef_bis import *
+from tabledef import *
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
