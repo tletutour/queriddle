@@ -16,20 +16,11 @@ class User(Base):
     username = Column(String)
     password = Column(String)
 
-class RaphMail(Base):
-
-    __tablename__ = "raphmails"
-
-    key_email = Column(String, primary_key=True)
-    email = Column(String)
-
 #----------------------------------------------------------------------
-def __init__(self, username, password, email):
+def __init__(self, username, password):
 
     self.username = username
     self.password = password
-    self.key_email = key_email
-    self.email = email
 
 # create tables
 Base.metadata.create_all(engine)

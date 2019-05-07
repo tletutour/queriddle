@@ -1,6 +1,6 @@
 from sqlalchemy import *
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Date, Integer, String,DateTime,Binary
+from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 import hashlib
@@ -8,21 +8,6 @@ import datetime
 
 engine = create_engine('sqlite:///base.db', echo=True)
 Base = declarative_base()
-
-########################################################################
-class User(Base):
-
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String)
-    password = Column(String)
-
-#----------------------------------------------------------------------
-    def __init__(self, username, password):
-    
-        self.username = username
-        self.password = password
 
 
 class Utilisateur(Base):
@@ -34,13 +19,15 @@ class Utilisateur(Base):
     password = Column(String)
     status= Column(String)
     
-    def __init__(self, username, email,password):
-    
-        self.username = username
-        self.email= email
-        self.password = password
-        self.status="normal"
-    
+class User(Base):
+
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String)
+    password = Column(String)
+
+
 
 class Matiere(Base):
     __tablename__="matieres"
@@ -131,12 +118,23 @@ class RaphMail(Base):
     __tablename__="raphmails"
     #On met ça en primary pour être sur de chez sur
     #Que personne aura la même clé d'url
-    cle_url=Column(String,primary_key=True)
+    key_email=Column(String,primary_key=True)
     email=Column(String)
     
-    def __init__(self,cle_url,email):
-        self.cle_url=cle_url
+    def __init__(self,key_email,email):
+        self.key_email=key_email
         self.email=email
     
+
+#----------------------------------------------------------------------
+"""
+def __init__(self, username, password, email):
+
+    self.username = username
+    self.password = password
+    self.key_email = key_email
+    self.email = email
+"""
+
 # create tables
 Base.metadata.create_all(engine)
