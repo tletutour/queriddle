@@ -105,7 +105,10 @@ class Commentaire(Base):
     user_rel=relationship("Utilisateur",foreign_keys=[idUser])
     user_rel=relationship("QuestionArchive",foreign_keys=[idQuestArch])
 
-
-
+class RaphMail(Base):
+    __tablename__="raphmails"
+    cle_url=Column(String,primary_key=True)
+    email=Column(String)
+    
 # create tables
 Base.metadata.create_all(engine)
