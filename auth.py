@@ -2,16 +2,15 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from flask_mail import Mail, Message
 from flask_socketio import SocketIO
 import os
+import json
 from random import choice
 from string import ascii_lowercase
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
-from tabledef import Utilisateur, RaphMail,Matiere, hasher
-from json import *
+from tabledef import Utilisateur, RaphMail,Matiere, hasher,Tchat
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
-app.secret_key = os.urandom(12)
 socketio = SocketIO(app)
 
 @app.route('/')
@@ -19,7 +18,7 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        return render_template('session2.html', myUsername=session['username'])
+        return render_template('session.html', myUsername=session['username'])
 
 @app.route('/login', methods=['GET','POST'])
 def do_admin_login():
@@ -84,7 +83,7 @@ def new_account():
         msg = Message(subject="Merci Marley !",
                       sender=app.config.get("MAIL_USERNAME"),
                       recipients=[request.form['email']],
-                      body="Salut va sur ce lien pour creer ton compte : http://127.0.0.1:5000/create_account/"+key)
+                      body="Salut va sur ce lien pour creer ton compte : http://0.0.0.0:4000/create_account/"+key)
         mail.send(msg)
         # Stock les données
         user2 = RaphMail(key_email=str(key), email=str(request.form['email']))
@@ -103,16 +102,14 @@ def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
 @socketio.on('my event')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print('received my event: ' + str(json))
-    socketio.emit('my response', json, callback=messageReceived)
-
-
-@app.route('/shutdown', methods=['GET'])
-def shutdown():
-    shutdown_server()
-    return 'Server shutting down...'
-
+def handle_my_custom_event(msg, methods=['GET', 'POST']):
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    print('received my event: ' + str(msg))
+    socketio.emit('my response', msg, callback=messageReceived)
+    new_message=Tchat(username = session['username'],refere = 0,contenu = msg["message"],idFichier = 0)#contenu,refere,username,idFichier,score=0
+    s.add(new_message)
+    s.commit()
 if __name__ == "__main__":
-
-    socketio.run(app, debug=True,host='127.0.0.1', port=5000)
+    app.secret_key = os.urandom(12)
+    socketio.run(app, debug=True, host='0.0.0.0', port=4000)
