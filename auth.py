@@ -2,6 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from flask_mail import Mail, Message
 from flask_socketio import SocketIO
 import os
+import json
 from random import choice
 from string import ascii_lowercase
 from sqlalchemy import *
@@ -101,12 +102,12 @@ def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
 @socketio.on('my event')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
+def handle_my_custom_event(msg, methods=['GET', 'POST']):
     Session = sessionmaker(bind=engine)
     s = Session()
-    print('received my event: ' + str(json))
-    socketio.emit('my response', json, callback=messageReceived)
-    new_message=Tchat("Yoyo",0,"Tom",0)#contenu,refere,username,idFichier,score=0
+    print('received my event: ' + str(msg))
+    socketio.emit('my response', msg, callback=messageReceived)
+    new_message=Tchat(username = session['username'],refere = 0,contenu = msg["message"],idFichier = 0)#contenu,refere,username,idFichier,score=0
     s.add(new_message)
     s.commit()
 if __name__ == "__main__":
