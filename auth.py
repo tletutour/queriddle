@@ -7,9 +7,11 @@ from string import ascii_lowercase
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from tabledef import Utilisateur, RaphMail,Matiere, hasher
+from json import *
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
+app.secret_key = os.urandom(12)
 socketio = SocketIO(app)
 
 @app.route('/')
@@ -17,7 +19,7 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        return render_template('session.html', myUsername=session['username'])
+        return render_template('session2.html', myUsername=session['username'])
 
 @app.route('/login', methods=['GET','POST'])
 def do_admin_login():
@@ -82,7 +84,7 @@ def new_account():
         msg = Message(subject="Merci Marley !",
                       sender=app.config.get("MAIL_USERNAME"),
                       recipients=[request.form['email']],
-                      body="Salut va sur ce lien pour creer ton compte : http://0.0.0.0:4000/create_account/"+key)
+                      body="Salut va sur ce lien pour creer ton compte : http://127.0.0.1:5000/create_account/"+key)
         mail.send(msg)
         # Stock les données
         user2 = RaphMail(key_email=str(key), email=str(request.form['email']))
@@ -105,6 +107,12 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
     socketio.emit('my response', json, callback=messageReceived)
 
+
+@app.route('/shutdown', methods=['GET'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
 if __name__ == "__main__":
-    app.secret_key = os.urandom(12)
-    socketio.run(app, debug=True,host='0.0.0.0', port=4000)
+
+    socketio.run(app, debug=True,host='127.0.0.1', port=5000)
