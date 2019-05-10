@@ -21,7 +21,7 @@ socketio = SocketIO(app)
 
 
 '''ROOT : Page Racine qui redirige vers login si non connecté, et vers ressources (resources)
-sinon'''
+sinon (ici, c'est le tchat)'''
 @app.route('/')
 def home():
     if not session.get('logged_in'):
