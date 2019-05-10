@@ -6,7 +6,7 @@ from random import choice
 from string import ascii_lowercase
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
-from tabledef import Utilisateur, RaphMail,Matiere, hasher
+from tabledef import Utilisateur, RaphMail,Matiere, hasher,Tchat
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
@@ -102,9 +102,13 @@ def messageReceived(methods=['GET', 'POST']):
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
+    Session = sessionmaker(bind=engine)
+    s = Session()
     print('received my event: ' + str(json))
     socketio.emit('my response', json, callback=messageReceived)
-
+    new_message=Tchat("Yoyo",0,"Tom",0)#contenu,refere,username,idFichier,score=0
+    s.add(new_message)
+    s.commit()
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     socketio.run(app, debug=True, host='0.0.0.0', port=4000)

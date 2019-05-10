@@ -42,24 +42,23 @@ class Matiere(Base):
         self.score=0
         self.annee=annee
  
-class Message(Base):
+class Tchat(Base):
     __tablename__="messages"
     id=Column(Integer, primary_key=True)
     contenu= Column(String)
     score= Column(Integer)
     refere= Column(Integer)
-    date= Column(DateTime)
-    
+    date= Column(DateTime,default=datetime.datetime.utcnow)
     username=Column(Integer, ForeignKey("utilisateurs.username"))
     idFichier=Column(Integer, ForeignKey("fichiers.id"))
     
     user_rel=relationship("Utilisateur",foreign_keys=[username])
     fich_rel=relationship("Fichier",foreign_keys=[idFichier])
     
-    def __init__(self, contenu,score,refere,username,idFichier):
+    def __init__(self, contenu,refere,username,idFichier,score=0):
         self.contenu=contenu
         self.score=score
-        self.date=datetime.datetime()
+        self.refere= refere
         self.username=username
         self.idFichier=idFichier
 
@@ -103,10 +102,8 @@ class Commentaire(Base):
     __tablename__="commentaires"
     id=Column(Integer, primary_key=True)
     contenu=Column(String)
-    
     username=Column(Integer, ForeignKey("utilisateurs.username"))
     idQuestArch=Column(Integer, ForeignKey("questionsArchivees.id"))
-    
     user_rel=relationship("Utilisateur",foreign_keys=[username])
     user_rel=relationship("QuestionArchive",foreign_keys=[idQuestArch])
 
