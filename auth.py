@@ -107,4 +107,4 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    socketio.run(app, debug=True,host='0.0.0.0', port=4000)
+    socketio.run(app, debug=True, host='0.0.0.0', port=4000)
