@@ -1,5 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
 from flask_mail import Mail, Message
+from flask_socketio import SocketIO
 import os
 from random import choice
 from string import ascii_lowercase
@@ -9,13 +10,14 @@ from tabledef import Utilisateur, RaphMail,Matiere, hasher
 engine = create_engine('sqlite:///base.db', echo=True)
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 @app.route('/')
 def home():
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        return "Hello Boss!  <a href='/logout'>Logout</a>"
+        return render_template('session.html', myUsername=session['username'])
 
 @app.route('/login', methods=['GET','POST'])
 def do_admin_login():
@@ -30,6 +32,7 @@ def do_admin_login():
         result = query.first()
         if result:
             session['logged_in'] = True
+            session['username'] = POST_USERNAME
         else:
             flash('Mot de passe incorrect !')
         return redirect(url_for('home'))
@@ -91,8 +94,17 @@ def new_account():
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
+    session.pop('username', None)
     return redirect(url_for('home'))
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='0.0.0.0', port=4000)
+    socketio.run(app, debug=True,host='0.0.0.0', port=4000)
