@@ -12,8 +12,10 @@
 
    <script type="text/javascript">
      var socket = io.connect('http://' + document.domain + ':' + location.port);
-
      socket.on( 'connect', function() {
+      socket.emit( 'first', {
+        data: 'User Connected'
+        })
        var form = $( 'form' ).on( 'submit', function( e ) {
          e.preventDefault()
          let user_name = $( 'textarea.username' ).val()
