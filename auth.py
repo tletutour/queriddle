@@ -109,6 +109,17 @@ def handle_my_custom_event(msg, methods=['GET', 'POST']):
     new_message=Tchat(username = session['username'],refere = 0,contenu = msg["message"],idFichier = 0)#contenu,refere,username,idFichier,score=0
     s.add(new_message)
     s.commit()
+    
+@socketio.on('first')
+def handle_my_custom_event(msg, methods=['GET', 'POST']):
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    query = s.query(Tchat.contenu, Tchat.username)
+    for q in query:
+        msg = {"user_name": q[1], "message": q[0]}
+        print('received my event: ' + str(msg))
+        socketio.emit('my response', msg, callback=messageReceived)
+    
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     socketio.run(app, debug=True, host='127.0.0.1', port=5000)
