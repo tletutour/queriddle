@@ -9,22 +9,18 @@ import datetime
 engine = create_engine('sqlite:///base.db', echo=True)
 Base = declarative_base()
 
+
 def hasher(mystring):
     hash_object = hashlib.md5(mystring.encode())
     return hash_object.hexdigest()
 
-def is_password(mystring, hashed):
-    hash_object = hashlib.md5(mystring.encode())
-    if hash_object.hexdigest()==hashed:
-        return True
-    return False
 
 class Utilisateur(Base):
 
     __tablename__ = "utilisateurs"
-    id = Column(Integer, primary_key=True)
+    username = Column(String, primary_key=True)
     email= Column(String)
-    username = Column(String)
+
     password = Column(String)
     status= Column(String)
     
@@ -54,17 +50,17 @@ class Message(Base):
     refere= Column(Integer)
     date= Column(DateTime)
     
-    idUser=Column(Integer, ForeignKey("utilisateurs.id"))
+    username=Column(Integer, ForeignKey("utilisateurs.username"))
     idFichier=Column(Integer, ForeignKey("fichiers.id"))
     
-    user_rel=relationship("Utilisateur",foreign_keys=[idUser])
+    user_rel=relationship("Utilisateur",foreign_keys=[username])
     fich_rel=relationship("Fichier",foreign_keys=[idFichier])
     
-    def __init__(self, contenu,score,refere,idUser,idFichier):
+    def __init__(self, contenu,score,refere,username,idFichier):
         self.contenu=contenu
         self.score=score
         self.date=datetime.datetime()
-        self.idUser=idUser
+        self.username=username
         self.idFichier=idFichier
 
 class Fichier(Base):
@@ -89,17 +85,17 @@ class QuestionArchive(Base):
     id=Column(Integer, primary_key=True)
     contenu=Column(String)
     
-    idUser=Column(Integer, ForeignKey("utilisateurs.id"))
+    username=Column(Integer, ForeignKey("utilisateurs.username"))
     idMatiere=Column(Integer, ForeignKey("matieres.id"))
     idFichier=Column(Integer, ForeignKey("fichiers.id"))
     
-    user_rel=relationship("Utilisateur",foreign_keys=[idUser])
+    user_rel=relationship("Utilisateur",foreign_keys=[username])
     mat_rel=relationship("Matiere",foreign_keys=[idMatiere])
     fich_rel=relationship("Fichier",foreign_keys=[idFichier])
     
-    def __init__(self,contenu,idUser,idMatiere,idFichier):
+    def __init__(self,contenu,username,idMatiere,idFichier):
         self.contenu=contenu
-        self.idUser=idUser
+        self.username=username
         self.idMatiere=idMatiere
         self.idFichier=idFichier
     
@@ -108,15 +104,15 @@ class Commentaire(Base):
     id=Column(Integer, primary_key=True)
     contenu=Column(String)
     
-    idUser=Column(Integer, ForeignKey("utilisateurs.id"))
+    username=Column(Integer, ForeignKey("utilisateurs.username"))
     idQuestArch=Column(Integer, ForeignKey("questionsArchivees.id"))
     
-    user_rel=relationship("Utilisateur",foreign_keys=[idUser])
+    user_rel=relationship("Utilisateur",foreign_keys=[username])
     user_rel=relationship("QuestionArchive",foreign_keys=[idQuestArch])
 
-    def __init__(self, contenu,idUser,idQuestArch):
+    def __init__(self, contenu,username,idQuestArch):
         self.contenu=contenu
-        self.idUser=idUser
+        self.username=username
         self.idQuestArch=idQuestArch
 class RaphMail(Base):
     __tablename__="raphmails"
@@ -130,15 +126,6 @@ class RaphMail(Base):
         self.email=email
     
 
-#----------------------------------------------------------------------
-"""
-def __init__(self, username, password, email):
-
-    self.username = username
-    self.password = password
-    self.key_email = key_email
-    self.email = email
-"""
 
 # create tables
 Base.metadata.create_all(engine)
