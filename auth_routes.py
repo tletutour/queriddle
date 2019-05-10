@@ -87,7 +87,8 @@ def new_account():
         user2 = RaphMail(key_email=str(key), email=str(request.form['email']))
         s.add(user2)
         s.commit()
-        return redirect(url_for('mail_sent', envoi='mail_envoye'))
+        return render_template('login.html')
+        #return redirect(url_for('mail_sent', envoi='mail_envoye'))
     return render_template('new_account.html')
 
 
@@ -115,6 +116,22 @@ def create_account(key):
         return redirect(url_for('do_admin_login'))
     return render_template('create_account.html', key = key)
 
+def messageReceived(methods=['GET', 'POST']):
+    print('------> LOG : message was received!!!')
+
+'''Création du SOCKET et gestion des interactions'''
+@socketio.on('my event')
+def handle_my_custom_event(msg, methods=['GET', 'POST']):
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    print('------> LOG : received my event: ' + str(msg))
+    socketio.emit('my response', msg, callback=messageReceived)
+    new_message=Tchat(username = session['username'],refere = 0,contenu = msg["message"],idFichier = 0)#contenu,refere,username,idFichier,score=0
+    s.add(new_message)
+    s.commit()
+
+
+#---------------Routes Statiques----------------------
 
 '''RESOURCES : Accès à la page des ressources. Cette page affichera le pdf 
 décrivant Queriddle'''
@@ -179,7 +196,6 @@ def myaccount():
     return render_template('myaccount.html')
 
 
-
 '''LOG_OUT : Déconnexion de l'utilisateur'''
 @app.route("/logout")
 def logout():
@@ -187,20 +203,7 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('home'))
 
-def messageReceived(methods=['GET', 'POST']):
-    print('------> LOG : message was received!!!')
 
-'''Création du socket et gestion des interactions'''
-
-@socketio.on('my event')
-def handle_my_custom_event(msg, methods=['GET', 'POST']):
-    Session = sessionmaker(bind=engine)
-    s = Session()
-    print('------> LOG : received my event: ' + str(msg))
-    socketio.emit('my response', msg, callback=messageReceived)
-    new_message=Tchat(username = session['username'],refere = 0,contenu = msg["message"],idFichier = 0)#contenu,refere,username,idFichier,score=0
-    s.add(new_message)
-    s.commit()
 
 #------------GESTION DES PAGES D'ERREUR------------------------
 
