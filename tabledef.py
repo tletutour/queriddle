@@ -50,10 +50,10 @@ class Tchat(Base):
     refere= Column(Integer)
     date= Column(DateTime,default=datetime.datetime.utcnow)
     username=Column(Integer, ForeignKey("utilisateurs.username"))
-    idFichier=Column(Integer, ForeignKey("fichiers.id"))
+    idMat=Column(Integer, ForeignKey("matieres.id"))
     
     user_rel=relationship("Utilisateur",foreign_keys=[username])
-    fich_rel=relationship("Fichier",foreign_keys=[idFichier])
+    mat_rel=relationship("Matiere",foreign_keys=[idMat])
     
     def __init__(self, contenu,refere,username,idFichier,score=0):
         self.contenu=contenu

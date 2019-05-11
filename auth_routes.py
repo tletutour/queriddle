@@ -27,8 +27,8 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        return render_template('session.html', myUsername=session['username'])
-        #return redirect(url_for('resources'))
+        #return render_template('session.html', myUsername=session['username'])
+        return redirect(url_for('resources'))
 
 
 '''LOGIN : Page où l'on entre les identifiants (pseudo et mdp). On peut accéder à la page
@@ -186,7 +186,7 @@ def matiere(num_annee, matiere):
         #WHERE Matiere.id= Fichier.idMatiere AND Matiere.nomMat=matiere
         query=s.query(Fichier.nomFichier).join(Matiere).filter(Matiere.id==Fichier.idMatiere).filter(Matiere.nomMat==matiere).all()
         for row in query:
-            matiereList.add(row.nomFichier)
+            fichierList.add(row.nomFichier)
     return render_template('matiere.html',fichierList=fichierList)
 
 
@@ -209,7 +209,7 @@ def logout():
 
 @app.errorhandler(404)
 def page_404(error):
-    return "Nous ne sommes pas parvenus à trouver votre page", 404 #TODO: temp 404.html avec un lien vers home
+    return render_template('404.html')
 
 
 

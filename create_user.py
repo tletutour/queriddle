@@ -15,11 +15,23 @@ user = Utilisateur(username="Marlon-Bradley",password="Paniah", email="to comple
 session.add(user)
 user = Utilisateur(username="Maxime",password="Bernard", email="to complete")
 session.add(user)
-user = Utilisateur(username="Tom",password="Le Tutour", email="to complete")
+user = Utilisateur(username="Tom",password="Ltr", email="to complete")#j'ai changé mon mdp batar
 session.add(user)
 user = Utilisateur(username="Basile",password="Deneire", email="to complete")
 session.add(user)
 
+matieres3A=["WEB","TSA","CRO"]
+matieres4A=["LOL","JSP","MDR"]
+matieres5A=["BAH","STAGE","FDP"]
+for mat in matieres3A:
+    new_mat=Matiere(annee=3,nomMat=mat)
+    session.add(new_mat)
+for mat in matieres4A:
+    new_mat=Matiere(annee=4,nomMat=mat)
+    session.add(new_mat)
+for mat in matieres5A:
+    new_mat=Matiere(annee=5,nomMat=mat)
+    session.add(new_mat)
 #user = User("jumpiness","python")
 #session.add(user)
 
