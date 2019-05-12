@@ -28,8 +28,8 @@ def home():
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        #return render_template('session.html', myUsername=session['username'])
-        return redirect(url_for('ressources'))
+        return render_template('session.html', myUsername=session['username'])
+        #return redirect(url_for('ressources'))
 
 
 '''LOGIN : Page où l'on entre les identifiants (pseudo et mdp). On peut accéder à la page
@@ -150,7 +150,7 @@ def ressources():
         query=s.query(Matiere.annee).group_by(Matiere.annee).all()
         for row in query:
             annees.append(row)
-    return render_template('resources.html',annees=annees)
+    return render_template('ressources.html',annees=annees) #TODO: créer le template
 
 
 '''RES.../NUM_ANNEE : En sélectionnant l'année dans le menu déroulant, la page 
