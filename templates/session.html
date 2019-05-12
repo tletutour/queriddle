@@ -4,12 +4,17 @@
    <title>Flask_Chat_App</title>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+     <link rel="stylesheet" href="/static/session1.css" type="text/css">
  </head>
  <body>
 
    <div class="message_holder">
        {% for msg in messages %}
-       <div><b style="color: #000">{{ msg.user_name }}</b>{{ msg.message }}</div>
+           {% if msg.user_name == myUsername %}
+       <div class="containerMe"><b style="color: #000">{{ msg.user_name }}</b><br>{{ msg.message }}</div>
+               {% else %}
+               <div class="container"><b style="color: #000">{{ msg.user_name }}</b><br>{{ msg.message }}</div>
+           {% endif %}
        {% endfor %}
    </div>
 
@@ -18,7 +23,7 @@
      socket.on( 'connect', function() {
        var form = $( 'form' ).on( 'submit', function( e ) {
          e.preventDefault()
-         let user_name = $( 'textarea.username' ).val()
+           let user_name = '{{ myUsername }}'
          let user_input = $( 'input.message' ).val()
          socket.emit( 'my event', {
            user_name : user_name,
@@ -28,16 +33,19 @@
        } )
      } )
      socket.on( 'my response', function( msg ) {
-       if( typeof msg.user_name !== 'undefined' ) {
-         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
+         if( msg.user_name === '{{ myUsername }}' ) {
+           $('div.message_holder').append('<div class="containerMe"><b style="color: #000">' + msg.user_name + '</b><br>' + msg.message + '</div>')
+       }
+       else if( typeof msg.user_name !== 'undefined' ) {
+         $( 'div.message_holder' ).append( '<div class="container"><b style="color: #000">'+msg.user_name+'</b><br>'+msg.message+'</div>' )
        }
      })
    </script>
    <form action="" method="POST">
-       <textarea class="username">{{ myUsername }}</textarea>
-     <input type="text" class="message" placeholder="Messages"/>
-     <input type="submit"/>
+     <input type="text" class="message" placeholder="..."/>
+              <input type="submit" value="Envoyer"/>
    </form>
-    <a href='/logout'>Logout</a>
+   <p class="username">Connecté en tant que {{ myUsername }} - <a href='/logout'>logout</a></p>
  </body>
  </html>
+
