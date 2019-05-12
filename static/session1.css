@@ -1,0 +1,49 @@
+.message_holder {
+    max-height: 400px;
+    max-width: 400px;
+    overflow: scroll;
+}
+
+.container {
+  font: 0.95em "Fira Sans",sans-serif;
+  line-height: 100%;
+  border: 2px solid #B6BCC2;
+  background-color: #F0F8FF;
+  max-width: 355px;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  margin-right: 70px;
+}
+
+.containerMe {
+  font: 0.95em "Fira Sans",sans-serif;
+  line-height: 100%;
+  border: 2px solid #B6BCC2;
+  background-color: #AAAAAA;
+  max-width: 355px;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  margin-left: 70px;
+}
+
+input[type=text] {
+  font: 0.95em "Fira Sans",sans-serif;
+  line-height: 100%;
+  border: 2px solid #B6BCC2;
+  width: 270px;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+input[type=submit] {
+    font: 0.95em "Fira Sans",sans-serif;
+  line-height: 100%;
+  border: 2px solid #B6BCC2;
+  background-color: #87CEFA;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+ }
