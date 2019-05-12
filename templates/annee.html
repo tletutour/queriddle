@@ -7,7 +7,7 @@
 <body>
     {% for m in matieres %}
         <div>
-            <button onclick="window.location.href='/ressources/'+String({{ num_annee }})+'/'+{{ m.nomMat }}"> {{ m.nomMat }}</button>
+            <button onclick="window.location.href='/ressources/'+String({{ num_annee }})+'/'+String({{ m.nomMat }})+'/tchat'"> {{ m.nomMat }}</button>
         </div>
     {% endfor %}
 </body>

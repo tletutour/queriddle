@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ressources</title>
+    <b>Séléctionnez une année</b>
+</head>
+<body>
+<div>
+       {% for a in annees %}
+           <div>
+                <button onclick="window.location.href='/ressources/'+{{ a.annee }}"> {{ a.annee }}</button>
+               <p  align="right">{{ a.score }}</p>
+           </div>
+
+       {% endfor %}
+</div>
+</body>
+</html>
+
