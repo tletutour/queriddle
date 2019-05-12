@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ num_annee }}</title>
+</head>
+<body>
+    {% for m in matieres %}
+        <div>
+            <button onclick="window.location.href='/ressources/'+String({{ num_annee }})+'/'+{{ m.nomMat }}"> {{ m.nomMat }}</button>
+        </div>
+    {% endfor %}
+</body>
+</html>

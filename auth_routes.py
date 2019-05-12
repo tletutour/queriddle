@@ -6,6 +6,7 @@ from flask import Flask, request, redirect, \
 from flask_mail import Mail, Message
 from flask_socketio import SocketIO
 import os
+import json
 from random import choice
 from string import ascii_lowercase
 from sqlalchemy import *
@@ -28,7 +29,7 @@ def home():
         return redirect(url_for('do_admin_login'))
     else:
         #return render_template('session.html', myUsername=session['username'])
-        return redirect(url_for('resources'))
+        return redirect(url_for('ressources'))
 
 
 '''LOGIN : Page où l'on entre les identifiants (pseudo et mdp). On peut accéder à la page
@@ -135,32 +136,31 @@ def handle_my_custom_event(msg, methods=['GET', 'POST']):
 
 '''RESOURCES : Accès à la page des ressources. Cette page affichera le pdf 
 décrivant Queriddle'''
-@app.route('/resources/')
-def resources():
+@app.route('/ressources/')
+def ressources():
     #On liste toutes les années
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        anneeList=[]
+        annees=[]
         Session = sessionmaker(bind=engine)
         s = Session()
         #On affiche toutes les annees dispo
         #SELECT annee FROM Matiere GROUP BY annee
         query=s.query(Matiere.annee).group_by(Matiere.annee).all()
         for row in query:
-            anneeList.add(row.annee)
-    return render_template('resources.html',anneeList=anneeList)
+            annees.append(row)
+    return render_template('resources.html',annees=annees)
 
 
 '''RES.../NUM_ANNEE : En sélectionnant l'année dans le menu déroulant, la page 
 recharge'''
-@app.route('/resources/<int:num_annee>/')
+@app.route('/ressources/<int:num_annee>/')
 def annee(num_annee):
     if not session.get('logged_in'):
         return redirect(url_for('do_admin_login'))
     else:
-        matiereList=[]
-        scoreList=[]
+        matieres = []
         Session = sessionmaker(bind=engine)
         s = Session()
         #On veut recup toutes les matières d'une année en particulier
@@ -168,9 +168,8 @@ def annee(num_annee):
         #SELECT nomMat, score FROM Matiere WHERE annee=num_annee ORDER BY score DESC
         query=s.query(Matiere.nomMat, Matiere.score).filter_by(annee=num_annee).order_by(desc(Matiere.score)).all()
         for row in query:
-            matiereList.add(row.nomMat)
-            scoreList.add(row.score)
-    return render_template('annee.html',matiereList=matiereList, scoreList=scoreList)
+            matieres.append(row)
+    return render_template('annee.html',num_annee=num_annee,matieres=matieres)
 
 
 '''RES.../NUM_A.../MATIERE : Après choix de la matière dans le menu déroulant'''

@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
 from flask_mail import Mail, Message
 from flask_socketio import SocketIO
