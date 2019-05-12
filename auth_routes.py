@@ -131,7 +131,9 @@ def handle_my_custom_event(msg, methods=['GET', 'POST']):
     s.add(new_message)
     s.commit()
 
-
+@app.route('/ressources/<int:num_annee>/<string:matiere>/tchat')
+def tchat(num_annee, matiere):
+    render_template("session.html")
 #---------------Routes Statiques----------------------
 
 '''RESOURCES : Accès à la page des ressources. Cette page affichera le pdf 

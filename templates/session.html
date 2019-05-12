@@ -26,8 +26,10 @@
            let user_name = '{{ myUsername }}'
          let user_input = $( 'input.message' ).val()
          socket.emit( 'my event', {
-           user_name : user_name,
-           message : user_input
+             user_name : user_name,
+             matiere : {{matiere}},
+             num_annee : {{ num_annee }},
+             message : user_input
          } )
          $( 'input.message' ).val( '' ).focus()
        } )
